@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng Dụng Tính Toán Chu Kỳ Giấc Ngủ</title>
+    <link rel="icon" type="image/png" href="./logo.png">
+    <style>
+        :root {
+            --primary-color: #5e35b1;
+            --secondary-color: #3949ab;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #ec407a;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #7c4dff;
+                --secondary-color: #5c6bc0;
+                --background-color: #121212;
+                --card-color: #1e1e1e;
+                --text-color: #f5f5f5;
+                --accent-color: #f48fb1;
+                --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .current-time {
+            background: var(--card-color);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .time-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .date-display {
+            font-size: 1.2rem;
+            margin-top: 5px;
+            color: var(--secondary-color);
+        }
+
+        .modes {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: var(--card-color);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .input-section {
+            background: var(--card-color);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .time-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .time-input input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: var(--background-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            width: 130px;
+        }
+
+        .time-input button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .time-input button:hover {
+            background: #d81b60;
+        }
+
+        .settings-section {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-item label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .settings-item input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: var(--background-color);
+            color: var(--text-color);
+            width: 60px;
+            text-align: center;
+        }
+
+        .results {
+            background: var(--card-color);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .result-heading {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .cycles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+        }
+
+        .cycle {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .cycle:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cycle-time {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cycle-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            .time-display {
+                font-size: 2.5rem;
+            }
+
+            .time-input {
+                flex-direction: column;
+            }
+
+            .time-input input {
+                width: 100%;
+            }
+
+            .cycle {
+                padding: 12px;
+            }
+
+            .cycle-time {
+                font-size: 1.3rem;
+            }
+
+            .cycles {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Ứng Dụng Tính Toán Chu Kỳ Giấc Ngủ</h1>
+            <p>Giúp bạn xác định thời điểm đi ngủ và thức dậy tối ưu</p>
+        </header>
+
+        <div class="current-time">
+            <div class="time-display" id="current-time">00:00:00</div>
+            <div class="date-display" id="current-date">Thứ Hai, 01/01/2025</div>
+        </div>
+
+        <div class="modes">
+            <button class="mode-btn active" id="sleep-now">Tôi muốn ngủ ngay</button>
+            <button class="mode-btn" id="sleep-at">Tôi sẽ đi ngủ lúc</button>
+            <button class="mode-btn" id="wake-up">Tôi muốn thức dậy lúc</button>
+        </div>
+
+        <div class="input-section" id="sleep-at-input" style="display: none;">
+            <div class="result-heading">Chọn thời gian bạn dự định đi ngủ:</div>
+            <div class="time-input">
+                <input type="time" id="sleep-time" value="22:00">
+                <button id="calculate-wake-up-time">Tính giờ thức dậy</button>
+            </div>
+        </div>
+
+        <div class="input-section" id="wake-up-input" style="display: none;">
+            <div class="result-heading">Chọn thời gian bạn muốn thức dậy:</div>
+            <div class="time-input">
+                <input type="time" id="wake-time" value="07:00">
+                <button id="calculate-sleep-time">Tính giờ đi ngủ</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="result-heading">Cài đặt:</div>
+            <div class="settings-section">
+                <div class="settings-item">
+                    <label for="fall-asleep-time">Thời gian đi vào giấc ngủ:</label>
+                    <input type="number" id="fall-asleep-time" min="1" max="60" value="15">
+                    <span>phút</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="results">
+            <div class="result-heading" id="result-heading">Nếu bạn ngủ ngay bây giờ, những thời điểm tốt nhất để thức
+                dậy là:</div>
+            <div class="cycles" id="cycles-container">
+                <!-- Kết quả sẽ được thêm vào đây bằng JavaScript -->
+            </div>
+        </div>
+
+        <footer>
+            Một chu kỳ giấc ngủ kéo dài khoảng 90 phút. Thức dậy vào cuối chu kỳ giúp bạn cảm thấy tỉnh táo hơn.
+        </footer>
+    </div>
+
+    <script>
+        // Các biến và hằng số
+        const SLEEP_CYCLE_DURATION = 90; // Thời gian một chu kỳ giấc ngủ (phút)
+        let FALL_ASLEEP_TIME = 15; // Thời gian trung bình để đi vào giấc ngủ (phút)
+        const MIN_CYCLES = 1; // Số chu kỳ giấc ngủ tối thiểu
+        const MAX_CYCLES = 6; // Số chu kỳ giấc ngủ tối đa
+
+        // Lấy các phần tử HTML
+        const currentTimeEl = document.getElementById('current-time');
+        const currentDateEl = document.getElementById('current-date');
+        const cyclesContainer = document.getElementById('cycles-container');
+        const sleepNowBtn = document.getElementById('sleep-now');
+        const sleepAtBtn = document.getElementById('sleep-at');
+        const wakeUpBtn = document.getElementById('wake-up');
+        const sleepAtInput = document.getElementById('sleep-at-input');
+        const wakeUpInput = document.getElementById('wake-up-input');
+        const sleepTimeInput = document.getElementById('sleep-time');
+        const wakeTimeInput = document.getElementById('wake-time');
+        const calculateWakeUpBtn = document.getElementById('calculate-wake-up-time');
+        const calculateSleepBtn = document.getElementById('calculate-sleep-time');
+        const resultHeading = document.getElementById('result-heading');
+        const fallAsleepTimeInput = document.getElementById('fall-asleep-time');
+
+        // Cập nhật thời gian hiện tại
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+
+            // Định dạng ngày tháng năm và thứ
+            const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' };
+            const dateString = now.toLocaleDateString('vi-VN', options);
+
+            currentTimeEl.textContent = timeString;
+            currentDateEl.textContent = dateString;
+        }
+
+        // Chuyển đổi chuỗi thời gian sang đối tượng Date
+        function parseTimeString(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes, 0, 0);
+            return date;
+        }
+
+        // Định dạng giờ phút
+        function formatTime(date) {
+            return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Cập nhật thời gian đi vào giấc ngủ
+        function updateFallAsleepTime() {
+            FALL_ASLEEP_TIME = parseInt(fallAsleepTimeInput.value, 10);
+            // Gọi hàm tính toán lại dựa trên chế độ hiện tại
+            if (sleepNowBtn.classList.contains('active')) {
+                calculateWakeUpFromNow();
+            } else if (sleepAtBtn.classList.contains('active')) {
+                calculateWakeUpFromSleepTime();
+            } else if (wakeUpBtn.classList.contains('active')) {
+                calculateSleepTimes();
+            }
+        }
+
+        // Tính toán thời gian thức dậy dựa trên thời điểm hiện tại
+        function calculateWakeUpFromNow() {
+            const now = new Date();
+            // Thêm thời gian để đi vào giấc ngủ
+            now.setMinutes(now.getMinutes() + FALL_ASLEEP_TIME);
+
+            const wakeUpTimes = [];
+
+            for (let i = MIN_CYCLES; i <= MAX_CYCLES; i++) {
+                const wakeUpTime = new Date(now.getTime());
+                wakeUpTime.setMinutes(wakeUpTime.getMinutes() + (i * SLEEP_CYCLE_DURATION));
+
+                const sleepDuration = (i * SLEEP_CYCLE_DURATION) / 60; // Chuyển thành giờ
+
+                wakeUpTimes.push({
+                    time: wakeUpTime,
+                    cycles: i,
+                    duration: sleepDuration
+                });
+            }
+
+            displayTimes(wakeUpTimes, 'wake');
+        }
+
+        // Tính toán thời gian thức dậy dựa trên thời điểm đi ngủ đã chọn
+        function calculateWakeUpFromSleepTime() {
+            const sleepTime = parseTimeString(sleepTimeInput.value);
+            // Thêm thời gian để đi vào giấc ngủ
+            sleepTime.setMinutes(sleepTime.getMinutes() + FALL_ASLEEP_TIME);
+
+            const wakeUpTimes = [];
+
+            for (let i = MIN_CYCLES; i <= MAX_CYCLES; i++) {
+                const wakeUpTime = new Date(sleepTime.getTime());
+                wakeUpTime.setMinutes(wakeUpTime.getMinutes() + (i * SLEEP_CYCLE_DURATION));
+
+                const sleepDuration = (i * SLEEP_CYCLE_DURATION) / 60; // Chuyển thành giờ
+
+                wakeUpTimes.push({
+                    time: wakeUpTime,
+                    cycles: i,
+                    duration: sleepDuration
+                });
+            }
+
+            displayTimes(wakeUpTimes, 'wake-from-sleep');
+        }
+
+        // Tính toán thời gian đi ngủ dựa trên thời điểm thức dậy
+        function calculateSleepTimes() {
+            const wakeUpTime = parseTimeString(wakeTimeInput.value);
+
+            const sleepTimes = [];
+
+            for (let i = MIN_CYCLES; i <= MAX_CYCLES; i++) {
+                const sleepTime = new Date(wakeUpTime.getTime());
+                sleepTime.setMinutes(sleepTime.getMinutes() - (i * SLEEP_CYCLE_DURATION) - FALL_ASLEEP_TIME);
+
+                const sleepDuration = (i * SLEEP_CYCLE_DURATION) / 60; // Chuyển thành giờ
+
+                sleepTimes.push({
+                    time: sleepTime,
+                    cycles: i,
+                    duration: sleepDuration
+                });
+            }
+
+            displayTimes(sleepTimes.reverse(), 'sleep'); // Đảo ngược mảng để hiển thị từ chu kỳ nhiều nhất đến ít nhất
+        }
+
+        // Hiển thị kết quả
+        function displayTimes(times, mode) {
+            cyclesContainer.innerHTML = '';
+
+            times.forEach(item => {
+                const cycleEl = document.createElement('div');
+                cycleEl.className = 'cycle';
+
+                // Định dạng thời gian
+                const timeStr = formatTime(item.time);
+
+                // Tạo nội dung
+                cycleEl.innerHTML = `
+                    <div class="cycle-time">${timeStr}</div>
+                    <div class="cycle-info">${item.cycles} chu kỳ (${item.duration.toFixed(1)} giờ)</div>
+                `;
+
+                // Xác định chất lượng giấc ngủ
+                let qualityText = '';
+                if (item.cycles === 6) {
+                    qualityText = 'Tối ưu';
+                } else if (item.cycles === 5) {
+                    qualityText = 'Rất tốt';
+                } else if (item.cycles === 4) {
+                    qualityText = 'Tốt';
+                } else if (item.cycles === 3) {
+                    qualityText = 'Đủ để phục hồi';
+                } else if (item.cycles === 2) {
+                    qualityText = 'Ngắn - giấc ngủ ngày';
+                } else if (item.cycles === 1) {
+                    qualityText = 'Rất ngắn - giấc ngủ trưa';
+                }
+
+                if (qualityText) {
+                    const qualityEl = document.createElement('div');
+                    qualityEl.className = 'cycle-info';
+                    qualityEl.textContent = qualityText;
+                    cycleEl.appendChild(qualityEl);
+                }
+
+                cyclesContainer.appendChild(cycleEl);
+            });
+
+            // Cập nhật tiêu đề kết quả
+            if (mode === 'wake') {
+                resultHeading.textContent = `Nếu bạn ngủ ngay bây giờ (${FALL_ASLEEP_TIME} phút để đi vào giấc ngủ), những thời điểm tốt nhất để thức dậy là:`;
+            } else if (mode === 'wake-from-sleep') {
+                resultHeading.textContent = `Nếu bạn đi ngủ lúc ${sleepTimeInput.value} (${FALL_ASLEEP_TIME} phút để đi vào giấc ngủ), những thời điểm tốt nhất để thức dậy là:`;
+            } else if (mode === 'sleep') {
+                resultHeading.textContent = `Để thức dậy lúc ${wakeTimeInput.value}, bạn nên đi ngủ vào (bao gồm ${FALL_ASLEEP_TIME} phút để đi vào giấc ngủ):`;
+            }
+        }
+
+        // Xử lý sự kiện khi người dùng chọn chế độ "Ngủ ngay"
+        sleepNowBtn.addEventListener('click', function () {
+            sleepNowBtn.classList.add('active');
+            sleepAtBtn.classList.remove('active');
+            wakeUpBtn.classList.remove('active');
+            sleepAtInput.style.display = 'none';
+            wakeUpInput.style.display = 'none';
+
+            calculateWakeUpFromNow();
+        });
+
+        // Xử lý sự kiện khi người dùng chọn chế độ "Đi ngủ lúc"
+        sleepAtBtn.addEventListener('click', function () {
+            sleepAtBtn.classList.add('active');
+            sleepNowBtn.classList.remove('active');
+            wakeUpBtn.classList.remove('active');
+            sleepAtInput.style.display = 'block';
+            wakeUpInput.style.display = 'none';
+
+            calculateWakeUpFromSleepTime();
+        });
+
+        // Xử lý sự kiện khi người dùng chọn chế độ "Thức dậy lúc"
+        wakeUpBtn.addEventListener('click', function () {
+            wakeUpBtn.classList.add('active');
+            sleepNowBtn.classList.remove('active');
+            sleepAtBtn.classList.remove('active');
+            wakeUpInput.style.display = 'block';
+            sleepAtInput.style.display = 'none';
+
+            calculateSleepTimes();
+        });
+
+        // Xử lý sự kiện khi người dùng thay đổi thời gian thức dậy
+        calculateSleepBtn.addEventListener('click', function () {
+            calculateSleepTimes();
+        });
+
+        // Xử lý sự kiện khi người dùng thay đổi thời gian đi ngủ
+        calculateWakeUpBtn.addEventListener('click', function () {
+            calculateWakeUpFromSleepTime();
+        });
+
+        // Xử lý sự kiện khi người dùng thay đổi thời gian đi vào giấc ngủ
+        fallAsleepTimeInput.addEventListener('change', updateFallAsleepTime);
+
+        // Tự động cập nhật thời gian hiện tại mỗi giây
+        setInterval(updateCurrentTime, 1000);
+
+        // Khởi tạo ứng dụng
+        window.onload = function () {
+            updateCurrentTime();
+            calculateWakeUpFromNow();
+        };
+    </script>
+</body>
+
+</html>
